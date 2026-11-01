@@ -1889,23 +1889,13 @@ dialog::backdrop {
   100% { opacity: 1; transform: translateY(0) rotate(-1deg) scale(1); }
 }
 
-/* Reduced Motion */
+/* Reduced Motion (Triggered explicitly by the user via the header button) */
 .reduced *,
 .reduced *::before,
 .reduced *::after {
   animation: none !important;
   transition: none !important;
   scroll-behavior: auto !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    scroll-behavior: auto !important;
-    transition: none !important;
-  }
 }
 
 /* Responsive Breakpoints */

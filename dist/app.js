@@ -211,8 +211,7 @@
   applyTheme(currentTheme);
 
   // --- Reduced Motion ---
-  const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const motionDisabled = () => reduced || document.documentElement.classList.contains('reduced');
+  const motionDisabled = () => document.documentElement.classList.contains('reduced');
 
   const motionBtn = $('#motion');
   motionBtn?.addEventListener('click', () => {
@@ -1718,23 +1717,25 @@
 
   cat?.addEventListener('click', pet);
 
-  let pupilFramePending = false;
-  document.addEventListener(
-    'pointermove',
-    e => {
-      if (!pupils || !window.innerWidth || pupilFramePending || motionDisabled()) return;
-      pupilFramePending = true;
-      const clientX = e.clientX;
-      const clientY = e.clientY;
-      requestAnimationFrame(() => {
-        const x = (clientX / window.innerWidth - 0.5) * 8;
-        const y = (clientY / window.innerHeight - 0.5) * 4;
-        pupils.style.transform = `translate(${x}px,${y}px)`;
-        pupilFramePending = false;
-      });
-    },
-    { passive: true }
-  );
+  const trackEyes = e => {
+    if (!pupils || !cat || document.documentElement.classList.contains('reduced')) return;
+    const pt = e.touches && e.touches[0] ? e.touches[0] : e;
+    if (typeof pt.clientX !== 'number' || typeof pt.clientY !== 'number') return;
+    const rect = cat.getBoundingClientRect();
+    const eyeCenterX = rect.left + rect.width * 0.52;
+    const eyeCenterY = rect.top + rect.height * 0.45;
+    const dx = pt.clientX - eyeCenterX;
+    const dy = pt.clientY - eyeCenterY;
+    const angle = Math.atan2(dy, dx);
+    const dist = Math.min(1, Math.hypot(dx, dy) / 220);
+    const moveX = (Math.cos(angle) * 7.5 * dist).toFixed(2);
+    const moveY = (Math.sin(angle) * 5.2 * dist).toFixed(2);
+    pupils.style.transform = `translate(${moveX}px, ${moveY}px)`;
+    pupils.setAttribute('transform', `translate(${moveX} ${moveY})`);
+  };
+  window.addEventListener('pointermove', trackEyes, { passive: true });
+  window.addEventListener('mousemove', trackEyes, { passive: true });
+  window.addEventListener('touchmove', trackEyes, { passive: true });
 
   $('#catRoom')?.addEventListener('click', () => {
     if (hearts < 5) {
