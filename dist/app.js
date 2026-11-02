@@ -39,6 +39,8 @@
       video.playsInline = true;
       video.preload = autoplay ? 'metadata' : 'none';
       video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
+      video.setAttribute('muted', '');
       video.setAttribute('aria-label', alt);
       if (controls) video.controls = true;
       if (autoplay) {
